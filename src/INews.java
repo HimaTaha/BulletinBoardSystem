@@ -4,7 +4,6 @@ import java.rmi.RemoteException;
 
 public interface INews extends Remote {
 	
-	String setNews(String news) throws RemoteException;
-	String getNews() throws RemoteException;
+	String update(String news) throws RemoteException;
 
 }

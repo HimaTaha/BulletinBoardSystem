@@ -4,26 +4,21 @@ import java.util.Random;
 
 public class BoardServer implements Runnable{
 
-    private Socket clientSocket;
     private BulletInBoard board;
     private Log log;
-
-    public BoardServer(BulletInBoard board, Socket clientSocket, Log log) {
-
-        this.clientSocket = clientSocket;
+    private String command, respond;
+    public BoardServer(BulletInBoard board, Log log, String command) {
         this.board = board;
         this.log = log;
+        this.command = command;
     }
 
     @Override
     public void run() {
 
         try {
-            BufferedReader bufferedReader = new BufferedReader(
-                    new InputStreamReader(clientSocket.getInputStream()));
-
             //read message from client
-            String msg = bufferedReader.readLine();
+            String msg =command;
             String[] segments = msg.split("\t\t");
             String type = segments[0];
             String ID = segments[1];
@@ -56,23 +51,15 @@ public class BoardServer implements Runnable{
 
             int oVal = board.getoVal();
 
-            BufferedWriter bufferedWriter = new BufferedWriter(
-                    new OutputStreamWriter(clientSocket.getOutputStream()));
 
             //respond to client
-            bufferedWriter.write( String.valueOf(oVal) + "\t\t" +
+           setRespond(( String.valueOf(oVal) + "\t\t" +
                                     String.valueOf(sSeq) + "\t\t" +
-                                    String.valueOf(rSeq) + "\n");
-            bufferedWriter.flush();
+                                    String.valueOf(rSeq) + "\n"));
+
 
             log.write(sSeq, oVal, rNum, ID, type);
 
-            bufferedReader.close();
-            bufferedWriter.close();
-            clientSocket.close();
-
-        } catch (IOException e) {
-            e.printStackTrace();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -85,4 +72,13 @@ public class BoardServer implements Runnable{
         int High = 10000;
         return r.nextInt(High - Low) + Low;
     }
+
+
+	public String getRespond() {
+		return respond;
+	}
+
+	public void setRespond(String respond) {
+		this.respond = respond;
+	}
 }

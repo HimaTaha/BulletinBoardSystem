@@ -1,16 +1,22 @@
 import java.io.IOException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
+import java.rmi.server.UnicastRemoteObject;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-public class TCPServer implements Runnable{
+public class Server implements  INews{
 
     private int serverPort, maxItrs;
     private ServerSocket serverSocket;
     private boolean isStopped;
     private Thread runningThread;
-
-    private TCPServer(int serverPort, int maxItrs) {
-
+    BulletInBoard board;
+    Log log = new Log();
+    private Server(int serverPort, int maxItrs) {
+        board = new BulletInBoard();
+        log = new Log();
         this.serverPort = serverPort;
         this.maxItrs = maxItrs;
     }
@@ -21,13 +27,34 @@ public class TCPServer implements Runnable{
         int serverPort = Integer.parseInt(args[0]);
         int maxItrs = Integer.parseInt(args[1]);
 
-        TCPServer tcpServer = new TCPServer(serverPort, maxItrs);
-
+        if (System.getSecurityManager() == null) {
+            System.setSecurityManager(new SecurityManager());
+        }
         System.out.println("Starting server ...");
-
-        tcpServer.run();
+        try {
+        	String server = "Server";
+        	Server tcpServer = new Server(serverPort, maxItrs);
+        	Server stub =
+                (Server) UnicastRemoteObject.exportObject(tcpServer, 0);
+            Registry registry = LocateRegistry.getRegistry();
+            registry.rebind(server, stub);
+            System.out.println("ComputeEngine bound");
+        } catch (Exception e) {
+            System.err.println("ComputeEngine exception:");
+            e.printStackTrace();
+        }
     }
 
+    
+    
+    
+  	@Override
+  	public String update(String news) throws RemoteException {
+  		BoardServer boardServer = new BoardServer(board, log, news);
+  		 new Thread(boardServer).start();
+  		return boardServer.getRespond();
+  	}
+  	/*
     @Override
     public void run() {
 
@@ -36,8 +63,7 @@ public class TCPServer implements Runnable{
             this.runningThread = Thread.currentThread();
         }
 
-        BulletInBoard board = new BulletInBoard();
-        Log log = new Log();
+        
 
         //create server socket
         try {
@@ -79,9 +105,13 @@ public class TCPServer implements Runnable{
             e.printStackTrace();
         }
     }
+    */
 
     private synchronized boolean isStopped() {
 
         return this.isStopped;
     }
+
+    
+  
 }
