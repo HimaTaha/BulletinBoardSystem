@@ -1,0 +1,6 @@
+grant codeBase "file:/BulletinBoardSystem/src/" 
+{
+ 
+    permission java.security.AllPermission;
+};
+

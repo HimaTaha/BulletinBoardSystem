@@ -14,6 +14,7 @@ public class Start {
             String serverPort = pReader.getServerPort();
             String ServerUserName = pReader.getServerUserName();
             String ServerPassword = pReader.getServerUserPassword();
+            String rmiRegistry = pReader.getRmiResgistry();
             int numOfReaders = pReader.getNumOfReaders() ;
             int numOfWriters = pReader.getNumOfWriters();
             int maxAcc = pReader.getMaxAcc();
@@ -82,7 +83,7 @@ public class Start {
             String fileName = serverFilePath.substring(index + 1);
             String fileDirectory = serverFilePath.substring(0, index);
             String command = " cd " + fileDirectory + " ; javac " +
-                    fileName  + ".java ; java " + fileName + " " + serverPort + " " + maxItr;
+                    fileName  + ".java ; java " + fileName + " "+ host+" " + serverPort + " " + maxItr;
             System.out.println(command);
 
             Util util = new Util(command, user, host, password);

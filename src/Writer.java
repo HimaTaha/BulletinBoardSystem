@@ -32,7 +32,7 @@ public class Writer {
         return;
     }
 
-    private static void write(String serverIP, String serverPort, String ID, String maxNumAcc,Registry registry) {
+    private static void write(String serverIP, String serverPort, String ID, String maxNumAcc, Registry registry) {
 
         int repeats = Integer.parseInt(maxNumAcc);
         PrintWriter log = null;

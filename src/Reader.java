@@ -10,9 +10,8 @@ import java.util.Random;
 public class Reader {
 
     public static void main(String[] args) {
-    	String RMIRegistry = "";
         String serverIP = args[0];
-        String serverPort = args[1];
+        int serverPort = Integer.parseInt(args[1]);
         String ID = args[2];
         String maxNumAcc = args[3];
         if (System.getSecurityManager() == null) {
@@ -20,8 +19,8 @@ public class Reader {
         }
         try {
             
-            Registry registry = LocateRegistry.getRegistry(RMIRegistry);
-            read(serverIP, serverPort, ID, maxNumAcc, registry);
+            Registry registry = LocateRegistry.getRegistry(serverIP, serverPort);
+            read(serverIP, ID, maxNumAcc, registry);
         } catch (Exception e) {
             System.err.println("ComputePi exception:");
             e.printStackTrace();
@@ -31,7 +30,7 @@ public class Reader {
         return;
     }
 
-    private static void read(String serverIP, String serverPort, String ID, String maxNumAcc, Registry registry) {
+    private static void read(String serverIP, String ID, String maxNumAcc, Registry registry) {
 
         int repeats = Integer.parseInt(maxNumAcc);
         PrintWriter log = null;

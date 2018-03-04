@@ -12,6 +12,7 @@ public class propertiesReader {
 	 private String serverUserName;
 	 private String serverUserPassword;
 	 private String ServerFilePath;
+	 private String rmiResgistry;
 	 private int numOfReaders ;
 	 private int numOfWriters ;
 	 private int maxAcc ;
@@ -40,6 +41,8 @@ public class propertiesReader {
 			setServerFilePath(tmp.split("=")[1].trim());
 			tmp = scan.nextLine();
 			this.setServerPort(tmp.split("=")[1].trim());
+			tmp = scan.nextLine();
+			this.setRmiResgistry(tmp.split("=")[1].trim());
 			tmp = scan.nextLine();
 			this.setNumOfReaders(Integer.parseInt(tmp.split("=")[1].trim()));
 			clientsHosts = new ArrayList<String>();
@@ -267,6 +270,20 @@ public class propertiesReader {
 	 */
 	public void setServerFilePath(String serverFilePath) {
 		ServerFilePath = serverFilePath;
+	}
+
+	/**
+	 * @return the rmiResgistry
+	 */
+	public String getRmiResgistry() {
+		return rmiResgistry;
+	}
+
+	/**
+	 * @param rmiResgistry the rmiResgistry to set
+	 */
+	public void setRmiResgistry(String rmiResgistry) {
+		this.rmiResgistry = rmiResgistry;
 	}
 
 }
