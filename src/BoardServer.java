@@ -21,7 +21,7 @@ public class BoardServer implements Runnable{
             String msg =command;
             String[] segments = msg.split("\t\t");
             String type = segments[0];
-            String ID = segments[1];
+            String ID = segments[1].trim();
 
             //assign received sequence number
             int rSeq = board.getrSeq();

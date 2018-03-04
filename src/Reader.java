@@ -14,9 +14,6 @@ public class Reader {
         int serverPort = Integer.parseInt(args[1]);
         String ID = args[2];
         String maxNumAcc = args[3];
-        if (System.getSecurityManager() == null) {
-            System.setSecurityManager(new SecurityManager());
-        }
         try {
             
             Registry registry = LocateRegistry.getRegistry(serverIP, serverPort);
@@ -35,8 +32,7 @@ public class Reader {
         int repeats = Integer.parseInt(maxNumAcc);
         PrintWriter log = null;
         String rSeq, sSeq, oVal;
-        String server = "Server";
-        
+        String server = "server";   
         try {
             log = new PrintWriter("log"+ID+".txt", "UTF-8");
             log.println("Client type: Reader");
@@ -53,7 +49,6 @@ public class Reader {
 		try {
 			client = (INews) registry.lookup(server);
 	        for (int i = 0; i < repeats; i++) {
-
 	            System.out.println("Reader ...");
 	            //send read request
 	            System.out.println("Sending read request ...");

@@ -10,18 +10,13 @@ import java.util.Random;
 public class Writer {
 
     public static void main(String[] args) {
-    	String RMIRegistry = "";
         String serverIP = args[0];
-        String serverPort = args[1];
+        int serverPort = Integer.parseInt(args[1]);
         String ID = args[2];
         String maxNumAcc = args[3];
         
-        if (System.getSecurityManager() == null) {
-            System.setSecurityManager(new SecurityManager());
-        }
         try {
-            
-            Registry registry = LocateRegistry.getRegistry(RMIRegistry);
+        	 Registry registry = LocateRegistry.getRegistry(serverIP, serverPort);
             write(serverIP, serverPort, ID, maxNumAcc, registry);
         } catch (Exception e) {
             System.err.println("ComputePi exception:");
@@ -32,13 +27,13 @@ public class Writer {
         return;
     }
 
-    private static void write(String serverIP, String serverPort, String ID, String maxNumAcc, Registry registry) {
+    private static void write(String serverIP, int serverPort, String ID, String maxNumAcc, Registry registry) {
 
         int repeats = Integer.parseInt(maxNumAcc);
         PrintWriter log = null;
         String rSeq, sSeq;
-        String server = "Server";
-
+        String server = "server";
+        int intID = Integer.parseInt(ID);
         try {
             log = new PrintWriter("log"+ID+".txt", "UTF-8");
             log.println("Client type: Writer");
@@ -51,7 +46,7 @@ public class Writer {
             e.printStackTrace();
         }
 
-        INews client;
+        INews client = null;
 		try {
 			client = (INews) registry.lookup(server);
 	        for (int i = 0; i < repeats; i++) {
@@ -60,9 +55,12 @@ public class Writer {
 	            //send write request
 	            System.out.println("Sending write request ...");
 	            String msg;
-				msg = client.update("write"+"\t\t"+ID+"\n");
+				msg = client.update("write"+"\t\t"+Integer.toString(intID)+"\n");
 	            //receive read data
+	            log.println(msg);
+	            log.flush();
 	            String[] segments = msg.split("\t\t");
+
 	            sSeq = segments[1];
 	            rSeq = segments[2];
 

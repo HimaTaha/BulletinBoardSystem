@@ -3,6 +3,9 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+
+import javax.sql.rowset.Joinable;
+
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -17,7 +20,7 @@ public class Server implements  INews{
     Log log = new Log();
     private Server(int serverPort, int maxItrs,String serverIp) {
         board = new BulletInBoard();
-       // log = new Log();
+        log = new Log();
         this.serverPort = serverPort;
         this.maxItrs = maxItrs;
         this.serverIP = serverIp;
@@ -29,7 +32,7 @@ public class Server implements  INews{
     	String serverIP = args[0];
         int serverPort = Integer.parseInt(args[1]);
         int maxItrs = Integer.parseInt(args[2]);
-        String server = "server";
+        String server = "server"; 
         /*
         if (System.getSecurityManager() == null) {
             System.setSecurityManager(new SecurityManager());
@@ -37,6 +40,7 @@ public class Server implements  INews{
         */
         System.out.println("Starting server ...");
         try {
+        	System.setProperty("java.rmi.server.hostname",serverIP);
         	LocateRegistry.createRegistry(serverPort);
             Registry registry = LocateRegistry.getRegistry(serverIP, serverPort);
         	Server tcpServer = new Server(serverPort, maxItrs, serverIP);
@@ -55,9 +59,17 @@ public class Server implements  INews{
     
     
   	@Override
-  	public String update(String news) throws RemoteException {
+  	public  synchronized String update(String news) throws RemoteException {
   		BoardServer boardServer = new BoardServer(board, log, news);
-  		 new Thread(boardServer).start();
+  		Thread thread = new Thread(boardServer);
+  		thread.start();
+  		try {
+			thread.join();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+  		//new Thread(boardServer).start();
   		return boardServer.getRespond();
   	}
 
