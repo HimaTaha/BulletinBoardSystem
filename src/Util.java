@@ -19,6 +19,7 @@ public class Util {
     public void initSSH() {
 
         try {
+        	System.out.println("in ssh init");
             java.util.Properties config = new java.util.Properties();
             config.put("StrictHostKeyChecking", "no");
             JSch jsch = new JSch();
@@ -47,6 +48,7 @@ public class Util {
             session.disconnect();
             System.out.println("ssh session to " + host + " has been terminated.");
         } catch (Exception e) {
+        	System.out.println("Error : in the command " + command);
             e.printStackTrace();
         }
     }

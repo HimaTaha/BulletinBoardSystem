@@ -14,12 +14,13 @@ public class Reader {
         int serverPort = Integer.parseInt(args[1]);
         String ID = args[2];
         String maxNumAcc = args[3];
+        String rmiRegistry = args[4];
         try {
             
-            Registry registry = LocateRegistry.getRegistry(serverIP, serverPort);
-            read(serverIP, ID, maxNumAcc, registry);
+            Registry registry = LocateRegistry.getRegistry(serverIP, Integer.parseInt(rmiRegistry));
+            read(serverIP, ID, maxNumAcc, registry , rmiRegistry);
         } catch (Exception e) {
-            System.err.println("ComputePi exception:");
+            System.err.println(" exception:");
             e.printStackTrace();
         }
         
@@ -27,14 +28,15 @@ public class Reader {
         return;
     }
 
-    private static void read(String serverIP, String ID, String maxNumAcc, Registry registry) {
+    private static void read(String serverIP, String ID, String maxNumAcc, Registry registry , String rmiRegistry) {
 
         int repeats = Integer.parseInt(maxNumAcc);
         PrintWriter log = null;
         String rSeq, sSeq, oVal;
-        String server = "server";   
+        String server = rmiRegistry;
         try {
             log = new PrintWriter("log"+ID+".txt", "UTF-8");
+			log.println("repeats = " + repeats);
             log.println("Client type: Reader");
             log.println("Client Name: " + ID);
             log.println("rSeq"+"\t\t"+"sSeq"+"\t\t"+"oVal");
@@ -47,36 +49,31 @@ public class Reader {
 
         INews client = null;
 		try {
-			client = (INews) registry.lookup(server);
 	        for (int i = 0; i < repeats; i++) {
-	            System.out.println("Reader ...");
+	        	client =  (INews) registry.lookup(server);
 	            //send read request
-	            System.out.println("Sending read request ...");
-	            client =  (INews) registry.lookup(server);
 	            String msg = client.update("read"+"\t\t"+ID+"\n");
 	            String[] segments = msg.split("\t\t");
-
 	            oVal = segments[0];
 	            sSeq = segments[1];
 	            rSeq = segments[2];
-
 	            //writing logs
 	            log.println(rSeq+"\t\t"+sSeq+"\t\t"+oVal);
 	            log.flush();
-
 	            //sleep between operations
 	            try {
 	                Thread.sleep(getRandomSec());
 	            } catch (InterruptedException e) {
+	            	log.println("Error hass ocured ");
 	                e.printStackTrace();
 	            }
 	        }
 		} catch (RemoteException | NotBoundException e1) {
 			// TODO Auto-generated catch block
+			log.println(e1.toString());
+			log.flush();
 			e1.printStackTrace();
 		}
-
-        System.out.println("Finished reader " + ID + " ...");
         log.close();
     }
     

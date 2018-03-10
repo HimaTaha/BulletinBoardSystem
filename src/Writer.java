@@ -14,10 +14,11 @@ public class Writer {
         int serverPort = Integer.parseInt(args[1]);
         String ID = args[2];
         String maxNumAcc = args[3];
+        String rmiRegistry = args[4];
         
         try {
-        	 Registry registry = LocateRegistry.getRegistry(serverIP, serverPort);
-            write(serverIP, serverPort, ID, maxNumAcc, registry);
+        	 Registry registry = LocateRegistry.getRegistry(serverIP, Integer.parseInt(rmiRegistry));
+            write(serverIP, serverPort, ID, maxNumAcc, registry, rmiRegistry);
         } catch (Exception e) {
             System.err.println("ComputePi exception:");
             e.printStackTrace();
@@ -27,12 +28,12 @@ public class Writer {
         return;
     }
 
-    private static void write(String serverIP, int serverPort, String ID, String maxNumAcc, Registry registry) {
+    private static void write(String serverIP, int serverPort, String ID, String maxNumAcc, Registry registry,  String rmiRegistry) {
 
         int repeats = Integer.parseInt(maxNumAcc);
         PrintWriter log = null;
         String rSeq, sSeq;
-        String server = "server";
+        String server = rmiRegistry;
         int intID = Integer.parseInt(ID);
         try {
             log = new PrintWriter("log"+ID+".txt", "UTF-8");
@@ -48,17 +49,14 @@ public class Writer {
 
         INews client = null;
 		try {
-			client = (INews) registry.lookup(server);
 	        for (int i = 0; i < repeats; i++) {
-
+	        	client = (INews) registry.lookup(server);
 	            System.out.println("Writer ...");
 	            //send write request
 	            System.out.println("Sending write request ...");
 	            String msg;
 				msg = client.update("write"+"\t\t"+Integer.toString(intID)+"\n");
 	            //receive read data
-	            log.println(msg);
-	            log.flush();
 	            String[] segments = msg.split("\t\t");
 
 	            sSeq = segments[1];
@@ -76,7 +74,8 @@ public class Writer {
 	            }
 	        }
 		} catch (RemoteException | NotBoundException e1) {
-			// TODO Auto-generated catch block
+			log.println(e1.toString());
+			log.flush();
 			e1.printStackTrace();
 		}
 

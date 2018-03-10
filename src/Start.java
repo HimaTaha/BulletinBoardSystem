@@ -28,7 +28,7 @@ public class Start {
             System.out.println("Initializing server ...");
             new Thread(new ServerInit(serverPort, serverIP,
                             ServerUserName,ServerPassword, ServerFilePath,
-                            String.valueOf(numOfClients*maxAcc))).start();
+                            String.valueOf(numOfClients*maxAcc), rmiRegistry)).start();
 
             //sleep to make sure server is running
             try {
@@ -44,7 +44,7 @@ public class Start {
             for (; i < numOfReaders; i++) {
                 new Thread(new ReaderInit(serverIP, serverPort, i + 1, maxAcc,
                         clientsHosts.get(i), clientsUserNames.get(i),
-                        clientsPasswords.get(i), clientsFilePath.get(i))).start();
+                        clientsPasswords.get(i), clientsFilePath.get(i), rmiRegistry)).start();
             }
 
 
@@ -53,7 +53,7 @@ public class Start {
             for (; i < numOfClients; i++) {
                 new Thread(new WriterInit(serverIP, serverPort, i + 1, maxAcc,
                         clientsHosts.get(i), clientsUserNames.get(i),
-                        clientsPasswords.get(i), clientsFilePath.get(i))).start();
+                        clientsPasswords.get(i), clientsFilePath.get(i) , rmiRegistry)).start();
             }
 
             System.out.println("Finished ...");
@@ -65,15 +65,16 @@ public class Start {
 
     private static class ServerInit implements Runnable{
 
-        private String serverPort, host, user, password, serverFilePath, maxItr;
+        private String serverPort, host, user, password, serverFilePath, maxItr,rmiRegistry;
 
-        ServerInit(String serverPort, String host, String user, String password, String serverFilePath, String maxItr) {
+        ServerInit(String serverPort, String host, String user, String password, String serverFilePath, String maxItr, String rmiRegistry) {
             this.serverPort = serverPort;
             this.host = host;
             this.user = user;
             this.password = password;
             this.serverFilePath = serverFilePath;
             this.maxItr = maxItr;
+            this.rmiRegistry = rmiRegistry;
         }
 
         @Override
@@ -83,7 +84,7 @@ public class Start {
             String fileName = serverFilePath.substring(index + 1);
             String fileDirectory = serverFilePath.substring(0, index);
             String command = " cd " + fileDirectory + " ; javac " +
-                    fileName  + ".java ; java " + fileName + " "+ host+" " + serverPort + " " + maxItr;
+                    fileName  + ".java ; java " + fileName + " "+ host+" " + serverPort + " " + maxItr + " " + rmiRegistry;
             System.out.println(command);
 
             Util util = new Util(command, user, host, password);
@@ -93,10 +94,10 @@ public class Start {
 
     private static class ReaderInit implements Runnable{
 
-        String serverIP, serverPort, id, maxAcc, host, user, password, clientFilePath;
+        String serverIP, serverPort, id, maxAcc, host, user, password, clientFilePath,rmiRegistry;
 
         ReaderInit(String serverIP, String serverPort, int id, int maxAcc,
-                   String host, String user, String password, String clientFilePath) {
+                   String host, String user, String password, String clientFilePath, String rmiRegistry) {
             this.serverIP = serverIP;
             this.serverPort = serverPort;
             this.id = String.valueOf(id);
@@ -105,6 +106,7 @@ public class Start {
             this.user = user;
             this.password = password;
             this.clientFilePath = clientFilePath;
+            this.rmiRegistry=rmiRegistry;
         }
 
         @Override
@@ -115,7 +117,7 @@ public class Start {
             String fileDirectory = clientFilePath.substring(0, index);
             String command = " cd " + fileDirectory + " ; javac " + fileName  + ".java ; java " + fileName +
                     " "+ serverIP + " " + serverPort + " "
-                    + id + " " + maxAcc;
+                    + id + " " + maxAcc + " " + rmiRegistry ;
             System.out.println(command);
 
             Util util = new Util(command, user, host, password);
@@ -125,10 +127,10 @@ public class Start {
 
     private static class WriterInit implements Runnable{
 
-        String serverIP, serverPort, id, maxAcc, host, user, password, clientFilePath;
+        String serverIP, serverPort, id, maxAcc, host, user, password, clientFilePath,rmiRegistry;
 
         WriterInit(String serverIP, String serverPort, int id, int maxAcc,
-                   String host, String user, String password, String clientFilePath) {
+                   String host, String user, String password, String clientFilePath , String rmiRegistry) {
             this.serverIP = serverIP;
             this.serverPort = serverPort;
             this.id = String.valueOf(id);
@@ -137,6 +139,7 @@ public class Start {
             this.user = user;
             this.password = password;
             this.clientFilePath = clientFilePath;
+            this.rmiRegistry=rmiRegistry;
         }
 
         @Override
@@ -147,7 +150,7 @@ public class Start {
             String fileDirectory = clientFilePath.substring(0, index);
             String command = " cd " + fileDirectory + " ; javac " + fileName  + ".java ; java " + fileName +
                     " "+ serverIP + " " + serverPort + " "
-                    + id + " " + maxAcc;
+                    + id + " " + maxAcc+ " " + rmiRegistry;
             System.out.println(command);
 
             Util util = new Util(command, user, host, password);

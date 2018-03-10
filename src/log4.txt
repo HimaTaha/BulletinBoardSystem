@@ -1,10 +1,10 @@
 repeats = 3
 Client type: Reader
-Client Name: 2
+Client Name: 4
 rSeq		sSeq		oVal
-3
-		13		6
-19
-		20		7
-22
-		23		8
+2
+		3		5
+10
+		5		8
+11
+		9		5
